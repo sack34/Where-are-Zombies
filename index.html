@@ -73,13 +73,13 @@
                 });
                 all_markers.push(marker);
             }
-            //var old_position = new google.maps.Marker({
-                //position: {lat: 52.4142378730126, lng: -1.8141618673935866},
-                //map: zombie_map
-            //});
+            var old_position = new google.maps.Marker({
+                position: {lat: 52.4142378730126, lng: -1.8141618673935866},
+                map: zombie_map
+            });
         }
         function set_my_position(position) {
-            //old_position.setMap(null);
+            old_position.setMap(null);
             var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             var marker = new google.maps.Marker({
                 position: pos,
