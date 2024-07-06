@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <title>Where's zombie?</title>
+    <style>
+        #zombie_map {
+            height: 100%;
+            width: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            background-color: grey;
+        }
+    </style>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD67ooFt10ygML1GsvBvzrDdCLem8KKAjA&callback=initMap&libraries=geometry">
+    </script>
+  </head>
+  <body>
+    My zombie map
+    <div id="zombie_map"></div>
+    <script>
+        var zombie_map;
+        var old_position;
+        var tolerance;
+
+        var data = `52.41401087621722 -1.8136991863385132 woman-zombie(1).png
+         52.414095949026965 -1.8138520722523621 woman-zombie(1).png
+         52.413901916400064 -1.8135685596761064 woman-zombie(1).png
+         52.413827477373005 -1.8139266345795946 woman-zombie(1).png
+         52.413739131991 -1.814213630944188 woman-zombie(1).png
+         52.413708047462656 -1.8131005142030077 woman-zombie(1).png
+         52.4144506596172 -1.8129398296901722 woman-zombie(1).png
+         52.41419380673806 -1.8126863609382649 woman-zombie(1).png
+         52.41472831939173 -1.8134955195791358 woman-zombie(1).png
+         52.413408673522135 -1.8132206222462988 woman-zombie(1).png
+         52.41365880888634 -1.8132901557881032 woman-zombie(1).png
+         52.4138845804775 -1.8137689300972615 woman-zombie(1).png
+         52.413948385282914 -1.8136267730194722 woman-zombie(1).png
+         52.41387640036757 -1.813818550964037 hospital(1).png
+         52.413788055083586 -1.813382691999117 hospital(1).png
+         52.41424532181678 -1.8142772087055836 hospital(1).png
+         52.414484281205425 -1.8144432496440221 hospital(1).png
+         52.41416689614324 -1.8149300705802252 hospital(1).png
+         52.41365290077346 -1.81299880861032 crossed-swords(1).png
+         52.413850860011145 -1.8135151338456867 crossed-swords(1).png
+         52.414189262231055 -1.813954600911205 crossed-swords(1).png`;
+        var markers = data.split("\n");
+        function initMap() {
+    
+            zombie_map = new google.maps.Map(document.getElementById('zombie_map'), {
+                zoom: 20,
+                center: {lat: 52.4142378730126, lng: -1.8141618673935866}
+            });
+            if(navigator.geolocation) {
+                navigator.geolocation.watchPosition(set_my_position);
+            }
+            else {
+                alert("Geolocation doesn't work in your browser");
+            }
+
+            all_markers = [];
+            for(var i=0; i < markers.length; i++){
+                var marker_data = markers[i].trim();
+                marker_data = marker_data.split(" ");
+                var latitude = marker_data[0];
+                var longitude = marker_data[1];
+                var emoji = marker_data[2];
+                var marker_position = new google.maps.LatLng(latitude, longitude);
+                var marker = new google.maps.Marker({
+                    position: marker_position,
+                    map: zombie_map,
+                    icon: emoji
+                });
+                all_markers.push(marker);
+            }
+            //var old_position = new google.maps.Marker({
+                //position: {lat: 52.4142378730126, lng: -1.8141618673935866},
+                //map: zombie_map
+            //});
+        }
+        function set_my_position(position) {
+            //old_position.setMap(null);
+            var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            var marker = new google.maps.Marker({
+                position: pos,
+                map: zombie_map,
+                icon: 'smile(1).png'
+            });
+            old_position = marker;
+
+            for(var i=0; i < all_markers.length; i++){
+                var distance = google.maps.geometry.spherical.computeDistanceBetween(pos, all_markers[i].getPosition());
+                if( distance < tolerance ){
+                    var what_is_it = all_markers[i].getIcon();
+                    what_is_it = what_is_it.replace(".png", "");
+                    alert("Found the " + what_is_it );
+                    if( what_is_it != "zombie"){
+                        score += 10;
+                        alert("Your score is " + score);
+                    }
+                }
+            };
+        }
+    </script>
+  </body>
+</html>
